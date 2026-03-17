@@ -59,7 +59,7 @@ $$R_1 = \begin{bmatrix} C_\psi C_\theta & C_\psi S_\theta S_\phi - S_\psi C_\phi
 
 > where $C\_\theta = \cos(\theta)$, $S\_\theta = \sin(\theta)$, $C\_\phi = \cos(\phi)$, $S\_\phi = \sin(\phi)$, $C\_\psi = \cos(\psi)$, $S\_\psi = \sin(\psi)$.
 
-where $C_\theta = \cos(\theta)$ and $S_\theta = \sin(\theta)$.
+
 
 ### Thrust and Torque Model
 
