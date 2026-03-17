@@ -33,6 +33,8 @@ This project implements and compares three different control architectures on a 
 
 The system is inherently underactuated and nonlinear, making it an excellent benchmark for comparing classical, optimal, and nonlinear control approaches.
 
+![Quadcopter Flight Animation](results/figures/Animation.gif)
+
 | Controller | Type | Key Feature |
 |---|---|---|
 | PID + DOB | Classical | Disturbance rejection via observer |
@@ -55,7 +57,9 @@ The rotation matrix between frames is:
 
 $$R_1 = \begin{bmatrix} C_\psi C_\theta & C_\psi S_\theta S_\phi - S_\psi C_\phi & C_\psi S_\theta C_\phi + S_\psi S_\phi \\ S_\psi C_\theta & S_\psi S_\theta S_\phi + C_\psi C_\phi & S_\psi S_\theta C_\phi - C_\psi S_\phi \\ -S_\theta & C_\theta S_\phi & C_\theta C_\phi \end{bmatrix}$$
 
-where $C_\theta = \cos(\theta)$ and $S_\theta = \sin(\theta)$.
+> where $C\_\theta = \cos(\theta)$, $S\_\theta = \sin(\theta)$, $C\_\phi = \cos(\phi)$, $S\_\phi = \sin(\phi)$, $C\_\psi = \cos(\psi)$, $S\_\psi = \sin(\psi)$.
+
+
 
 ### Thrust and Torque Model
 
@@ -73,7 +77,9 @@ $$M_\phi = L(T_4 - T_2), \quad M_\theta = L(T_3 - T_1), \quad M_\psi = B(-\omega
 
 The mapping from thrust/torques to individual rotor speeds is:
 
-$$\begin{pmatrix} T \\ m_\phi \\ m_\theta \\ m_\psi \end{pmatrix} = \begin{pmatrix} K & K & K & K \\ 0 & KL & 0 & -KL \\ -KL & 0 & KL & 0 \\ -B & B & -B & B \end{pmatrix} \begin{pmatrix} \omega_1^2 \\ \omega_2^2 \\ \omega_3^2 \\ \omega_4^2 \end{pmatrix}$$
+$$T = K(\omega_1^2 + \omega_2^2 + \omega_3^2 + \omega_4^2)$$
+
+$$m_\phi = KL(-\omega_2^2 + \omega_4^2), \quad m_\theta = KL(-\omega_1^2 + \omega_3^2), \quad m_\psi = B(-\omega_1^2 + \omega_2^2 - \omega_3^2 + \omega_4^2)$$
 
 ### Translational Dynamics
 
@@ -97,7 +103,11 @@ $$\dot{R} = \left(\frac{I_{xx} - I_{yy}}{I_{zz}}\right)PQ + \frac{M_\psi}{I_{zz}
 
 The transformation from body angular velocities to Euler angle rates:
 
-$$\begin{bmatrix} \dot{\Phi} \\ \dot{\theta} \\ \dot{\Psi} \end{bmatrix} = \begin{bmatrix} 1 & \sin\Phi\tan\theta & \cos\Phi\tan\theta \\ 0 & \cos\Phi & -\sin\Phi \\ 0 & \frac{\sin\Phi}{\cos\theta} & \frac{\cos\Phi}{\cos\theta} \end{bmatrix} \begin{bmatrix} P \\ Q \\ R \end{bmatrix}$$
+$$\dot{\Phi} = P + Q\sin\Phi\tan\theta + R\cos\Phi\tan\theta$$
+
+$$\dot{\theta} = Q\cos\Phi - R\sin\Phi$$
+
+$$\dot{\Psi} = Q\frac{\sin\Phi}{\cos\theta} + R\frac{\cos\Phi}{\cos\theta}$$
 
 The Simulink plant model accepts **{ω₁, ω₂, ω₃, ω₄}** as inputs and outputs the full 12-state vector **{P, Q, R, Φ, θ, Ψ, U, V, W, X, Y, Z}**, implemented via a Level-2 S-Function block.
 
@@ -161,7 +171,7 @@ where the state matrices $A_r$ and $B_r$ are derived from the full nonlinear mod
 
 The LQR minimizes the quadratic cost function:
 
-$$J = \int_{t_0}^{\infty} \left\{ U(t)^T \cdot R \cdot U(t) + [X(t) - X_d(t)]^T \cdot Q \cdot [X(t) - X_d(t)] \right\} dt$$
+$$J = \int_{t_0}^{\infty} \left[ U(t)^T \cdot R \cdot U(t) + (X(t) - X_d(t))^T \cdot Q \cdot (X(t) - X_d(t)) \right] dt$$
 
 where $Q$ is the state weighting matrix and $R$ is the control effort weighting matrix.
 
@@ -288,14 +298,17 @@ Physical parameters used across all three simulations (based on a real quadcopte
 
 ## Results
 
-> 📸 Simulation result figures and GIFs will be added here after export from Simulink.
+The following results were obtained from MATLAB/Simulink simulations. All three controllers were tested under the same quadcopter model and disturbance conditions to ensure a fair comparison.
 
-Planned result visualizations:
-- Step response comparison (roll, pitch, yaw) for all 3 controllers
-- Altitude tracking performance
-- 3D trajectory tracking (circular path)
-- Disturbance rejection comparison (PID+DOB vs others)
-- Quadcopter 3D motion animation (GIF)
+### 3D Trajectory Tracking — Infinity Path
+
+The plots below show the reference path (blue dashed) versus the actual flight path (red) for each controller under external disturbance.
+
+| PID with Disturbance Observer | Backstepping Controller |
+|---|---|
+| ![PID Infinity](results/figures/pid_infinity_with_observer.jpg) | ![Backstepping Infinity](results/figures/bs_infinity.jpg) |
+
+> 📁 Additional simulation results including spiral trajectories and observer signals are available in the `results/figures/` folder.
 
 ---
 
