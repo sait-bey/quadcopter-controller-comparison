@@ -298,14 +298,17 @@ Physical parameters used across all three simulations (based on a real quadcopte
 
 ## Results
 
-> 📸 Simulation result figures and GIFs will be added here after export from Simulink.
+The following results were obtained from MATLAB/Simulink simulations. All three controllers were tested under the same quadcopter model and disturbance conditions to ensure a fair comparison.
 
-Planned result visualizations:
-- Step response comparison (roll, pitch, yaw) for all 3 controllers
-- Altitude tracking performance
-- 3D trajectory tracking (circular path)
-- Disturbance rejection comparison (PID+DOB vs others)
-- Quadcopter 3D motion animation (GIF)
+### 3D Trajectory Tracking — Infinity Path
+
+The plots below show the reference path (blue dashed) versus the actual flight path (red) for each controller under external disturbance.
+
+| PID with Disturbance Observer | Backstepping Controller |
+|---|---|
+| ![PID Infinity](results/figures/pid_infinity_with_observer.jpg) | ![Backstepping Infinity](results/figures/bs_infinity.jpg) |
+
+> 📁 Additional simulation results including spiral trajectories and observer signals are available in the `results/figures/` folder.
 
 ---
 
